@@ -1,33 +1,69 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { useGetGamesQuery } from '../../api/gamesApi';
 import { Game } from '../../types/game';
+import GameFilters from '../../components/GameFilters/GameFilters';
 
 const GameList: React.FC = () => {
+  // Состояния пагинации
   const [page, setPage] = useState(1);
   const limit = 20;
-  const { data: currentGames = [], isFetching } = useGetGamesQuery({ page, limit });
+
+  // Состояния фильтров
+  const [searchTerm, setSearchTerm] = useState('');
+  const [gameTypeFilter, setGameTypeFilter] = useState('');
+
+  // Запрос данных
+  const {
+    data: currentGames = [],
+    isFetching,
+    isError,
+  } = useGetGamesQuery({
+    page,
+    limit,
+  });
+
+  // Локальное хранилище всех игр
   const [allGames, setAllGames] = useState<Game[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement>(null);
 
+  // Получаем уникальные типы игр для фильтра
+  const gameTypes = useMemo(() => {
+    const types = new Set<string>();
+    allGames.forEach((game) => types.add(game.gameTypeID));
+    return Array.from(types).sort();
+  }, [allGames]);
+
+  // Фильтрация игр
+  const filteredGames = useMemo(() => {
+    return allGames.filter((game) => {
+      const matchesSearch = game.gameName.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesType = gameTypeFilter ? game.gameTypeID === gameTypeFilter : true;
+
+      return matchesSearch && matchesType;
+    });
+  }, [allGames, searchTerm, gameTypeFilter]);
+
   // Обработка новых данных
   useEffect(() => {
+    if (isError) {
+      setHasMore(false);
+      return;
+    }
+
     if (currentGames.length === 0) {
       setHasMore(false);
       return;
     }
 
-    setAllGames((prev) => {
-      // Фильтрация дубликатов
-      const newGames = currentGames.filter((game) => !prev.some((g) => g.gameID === game.gameID));
-      return [...prev, ...newGames];
-    });
+    setAllGames((prev) => [
+      ...prev,
+      ...currentGames.filter((game) => !prev.some((g) => g.gameID === game.gameID)),
+    ]);
 
-    // Если пришло меньше игр чем лимит - значит это последняя страница
-    if (currentGames.length < limit) {
-      setHasMore(false);
-    }
-  }, [currentGames, limit]);
+    setHasMore(currentGames.length >= limit);
+  }, [currentGames, limit, isError]);
 
   // Обработчик для Intersection Observer
   const handleObserver = useCallback(
@@ -56,28 +92,48 @@ const GameList: React.FC = () => {
     };
   }, [handleObserver]);
 
-  return (
-    <div className="games-grid">
-      {allGames.map((game) => (
-        <div key={game.gameID} className="game-card">
-          <img
-            src={`https://bsw-dk1.pragmaticplay.net/game_pic/square/200/${game.gameID}.png`}
-            alt={game.gameName}
-            loading="lazy"
-          />
-          <h3>{game.gameName}</h3>
-        </div>
-      ))}
+  if (isError) {
+    return <div className="error-message">Failed to load games. Please try again later.</div>;
+  }
 
-      {hasMore ? (
-        <div ref={loaderRef} style={{ height: '20px', margin: '10px 0' }}>
-          {isFetching && 'Loading...'}
-        </div>
-      ) : (
-        <div style={{ padding: '20px', textAlign: 'center' }}>No more games to load</div>
-      )}
+  return (
+    <div className="games-container">
+      {/* Компонент фильтров */}
+      <GameFilters
+        searchTerm={searchTerm}
+        gameTypeFilter={gameTypeFilter}
+        gameTypes={gameTypes}
+        onSearchChange={setSearchTerm}
+        onTypeFilterChange={setGameTypeFilter}
+      />
+
+      {/* Список игр */}
+      <div className="games-grid">
+        {filteredGames.map((game) => (
+          <div key={game.gameID} className="game-card">
+            <img
+              src={`https://bsw-dk1.pragmaticplay.net/game_pic/square/200/${game.gameID}.png`}
+              alt={game.gameName}
+              loading="lazy"
+              width={200}
+              height={200}
+            />
+            <h3>{game.gameName}</h3>
+            <p className="game-type">{game.gameTypeID}</p>
+          </div>
+        ))}
+
+        {/* Индикатор загрузки */}
+        {hasMore ? (
+          <div ref={loaderRef} className="loader" aria-busy={isFetching}>
+            {isFetching && 'Loading more games...'}
+          </div>
+        ) : (
+          <div className="end-message">No more games available</div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default GameList;
+export default React.memo(GameList);
