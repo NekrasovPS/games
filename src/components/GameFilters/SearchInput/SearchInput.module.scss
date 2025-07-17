@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 200px;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: #4a6bff;
+  }
+}
+
+.button {
+  padding: 8px 16px;
+  background-color: #4a6bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: darken(#4a6bff, 10%);
+  }
+}

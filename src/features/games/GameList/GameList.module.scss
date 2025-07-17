@@ -1,0 +1,26 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.loader {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.error {
+  color: #d32f2f;
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+}

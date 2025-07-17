@@ -16,5 +16,13 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "baseUrl": "src",
+  "paths": {
+    "@api/*": ["api/*"],
+    "@components/*": ["components/*"],
+    "@features/*": ["features/*"],
+    "@pages/*": ["pages/*"],
+    "@types/*": ["types/*"]
+  }
 }

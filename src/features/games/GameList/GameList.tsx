@@ -1,49 +1,31 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { useGetGamesQuery } from '../../api/gamesApi';
-import { Game } from '../../types/game';
-import GameFilters from '../../components/GameFilters/GameFilters';
+import { useGetGamesQuery } from '../../../api/gamesApi';
+import { Game } from '../../../types/game';
+import { GameFilters } from '../../../components/GameFilters/GameFilters';
+import { Loader } from '../../../components/Loader/Loader';
+import styles from './GameList.module.scss';
+import { GameCard } from '../../../components/GameCard/GameCard';
 
 const GameList: React.FC = () => {
-  // Состояния пагинации
   const [page, setPage] = useState(1);
   const limit = 20;
-
-  // Состояния фильтров
   const [searchTerm, setSearchTerm] = useState('');
   const [gameTypeFilter, setGameTypeFilter] = useState('');
 
-  // Запрос данных
+  // Получаем данные с автоматической трансформацией через RTK Query
   const {
-    data: currentGames = [],
+    data: games = [],
     isFetching,
     isError,
+    error,
   } = useGetGamesQuery({
     page,
     limit,
   });
 
-  // Локальное хранилище всех игр
   const [allGames, setAllGames] = useState<Game[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement>(null);
-
-  // Получаем уникальные типы игр для фильтра
-  const gameTypes = useMemo(() => {
-    const types = new Set<string>();
-    allGames.forEach((game) => types.add(game.gameTypeID));
-    return Array.from(types).sort();
-  }, [allGames]);
-
-  // Фильтрация игр
-  const filteredGames = useMemo(() => {
-    return allGames.filter((game) => {
-      const matchesSearch = game.gameName.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesType = gameTypeFilter ? game.gameTypeID === gameTypeFilter : true;
-
-      return matchesSearch && matchesType;
-    });
-  }, [allGames, searchTerm, gameTypeFilter]);
 
   // Обработка новых данных
   useEffect(() => {
@@ -52,18 +34,36 @@ const GameList: React.FC = () => {
       return;
     }
 
-    if (currentGames.length === 0) {
+    if (games.length === 0 && page > 1) {
       setHasMore(false);
       return;
     }
 
-    setAllGames((prev) => [
-      ...prev,
-      ...currentGames.filter((game) => !prev.some((g) => g.gameID === game.gameID)),
-    ]);
+    setAllGames((prev) => {
+      // Фильтрация дубликатов
+      const newGames = games.filter((game) => !prev.some((g) => g.gameID === game.gameID));
+      return [...prev, ...newGames];
+    });
 
-    setHasMore(currentGames.length >= limit);
-  }, [currentGames, limit, isError]);
+    // Проверяем, есть ли еще данные для загрузки
+    setHasMore(games.length >= limit);
+  }, [games, limit, isError, page]);
+
+  // Получаем уникальные типы игр для фильтра
+  const gameTypes = useMemo(() => {
+    const types = new Set<string>();
+    allGames.forEach((game) => types.add(game.gameTypeID));
+    return Array.from(types).sort();
+  }, [allGames]);
+
+  // Фильтрация игр по поиску и типу
+  const filteredGames = useMemo(() => {
+    return allGames.filter((game) => {
+      const matchesSearch = game.gameName.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = gameTypeFilter ? game.gameTypeID === gameTypeFilter : true;
+      return matchesSearch && matchesType;
+    });
+  }, [allGames, searchTerm, gameTypeFilter]);
 
   // Обработчик для Intersection Observer
   const handleObserver = useCallback(
@@ -76,7 +76,7 @@ const GameList: React.FC = () => {
     [hasMore, isFetching],
   );
 
-  // Настройка Observer
+  // Настройка Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, {
       root: null,
@@ -92,13 +92,22 @@ const GameList: React.FC = () => {
     };
   }, [handleObserver]);
 
+  // Обработка ошибок
   if (isError) {
-    return <div className="error-message">Failed to load games. Please try again later.</div>;
+    return <div className={styles.error}>Error loading games: {error?.toString()}</div>;
+  }
+
+  // Обработка пустого списка
+  if (!isFetching && filteredGames.length === 0 && page === 1) {
+    return (
+      <div className={styles.empty}>
+        {searchTerm || gameTypeFilter ? 'No games match your filters' : 'No games available'}
+      </div>
+    );
   }
 
   return (
-    <div className="games-container">
-      {/* Компонент фильтров */}
+    <div className={styles.container}>
       <GameFilters
         searchTerm={searchTerm}
         gameTypeFilter={gameTypeFilter}
@@ -107,31 +116,19 @@ const GameList: React.FC = () => {
         onTypeFilterChange={setGameTypeFilter}
       />
 
-      {/* Список игр */}
-      <div className="games-grid">
+      <div className={styles.grid}>
         {filteredGames.map((game) => (
-          <div key={game.gameID} className="game-card">
-            <img
-              src={`https://bsw-dk1.pragmaticplay.net/game_pic/square/200/${game.gameID}.png`}
-              alt={game.gameName}
-              loading="lazy"
-              width={200}
-              height={200}
-            />
-            <h3>{game.gameName}</h3>
-            <p className="game-type">{game.gameTypeID}</p>
-          </div>
+          <GameCard key={`${game.gameID}-${page}`} game={game} />
         ))}
-
-        {/* Индикатор загрузки */}
-        {hasMore ? (
-          <div ref={loaderRef} className="loader" aria-busy={isFetching}>
-            {isFetching && 'Loading more games...'}
-          </div>
-        ) : (
-          <div className="end-message">No more games available</div>
-        )}
       </div>
+
+      {hasMore ? (
+        <div ref={loaderRef} className={styles.loader}>
+          {isFetching && <Loader />}
+        </div>
+      ) : (
+        !isFetching && <div className={styles.endMessage}>No more games to load</div>
+      )}
     </div>
   );
 };

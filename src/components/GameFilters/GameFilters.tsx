@@ -1,6 +1,7 @@
 import React from 'react';
-import SearchInput from './SearchInput';
-import TypeFilter from './TypeFilter';
+import { SearchInput } from './SearchInput/SearchInput';
+import { TypeFilter } from './TypeFilter/TypeFilter';
+import styles from './GameFilters.module.scss';
 
 interface GameFiltersProps {
   searchTerm: string;
@@ -10,19 +11,19 @@ interface GameFiltersProps {
   onTypeFilterChange: (value: string) => void;
 }
 
-const GameFilters: React.FC<GameFiltersProps> = ({
-  searchTerm,
-  gameTypeFilter,
-  gameTypes,
-  onSearchChange,
-  onTypeFilterChange,
-}) => {
-  return (
-    <div className="filters-container">
+export const GameFilters = React.memo(
+  ({
+    searchTerm,
+    gameTypeFilter,
+    gameTypes,
+    onSearchChange,
+    onTypeFilterChange,
+  }: GameFiltersProps) => (
+    <section className={styles.container} aria-label="Game filters">
       <TypeFilter value={gameTypeFilter} options={gameTypes} onChange={onTypeFilterChange} />
       <SearchInput value={searchTerm} onChange={onSearchChange} />
-    </div>
-  );
-};
+    </section>
+  ),
+);
 
-export default GameFilters;
+GameFilters.displayName = 'GameFilters';

@@ -1,11 +1,11 @@
-import GamesPage from './pages/GamesPage';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+import { GamesPage } from './pages/GamesPage/GamesPage';
+import './assets/styles/global.scss';
 
-function App() {
-  return (
-    <div className="app">
-      <GamesPage />
-    </div>
-  );
-}
-
-export default App;
+export const App = () => (
+  <Provider store={store}>
+    <GamesPage />
+  </Provider>
+);
