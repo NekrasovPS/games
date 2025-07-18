@@ -21,7 +21,6 @@ export const GameCard = React.memo(({ game }: GameCardProps) => (
     />
     <div className={styles.content}>
       <h3 className={styles.title}>{game.gameName}</h3>
-      <span className={styles.type}>{game.gameTypeID}</span>
     </div>
   </article>
 ));

@@ -21,7 +21,7 @@ export const usePaginatedGames = (limit = 20) => {
     });
 
     setHasMore(games.length >= limit);
-  }, [games, page, isError]);
+  }, [games, page, isError, limit]);
 
   const nextPage = () => setPage((prev) => prev + 1);
 

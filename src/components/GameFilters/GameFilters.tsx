@@ -21,7 +21,7 @@ export const GameFilters = React.memo(
   }: GameFiltersProps) => (
     <section className={styles.container} aria-label="Game filters">
       <TypeFilter value={gameTypeFilter} options={gameTypes} onChange={onTypeFilterChange} />
-      <SearchInput value={searchTerm} onChange={onSearchChange} />
+      <SearchInput value={searchTerm} onSubmit={onSearchChange} />
     </section>
   ),
 );

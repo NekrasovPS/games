@@ -17,7 +17,7 @@ export const useInfiniteScroll = (options: InfiniteScrollOptions): RefObject<HTM
         options.onLoadMore();
       }
     },
-    [options.hasMore, options.isLoading],
+    [options],
   );
 
   useEffect(() => {
@@ -35,6 +35,5 @@ export const useInfiniteScroll = (options: InfiniteScrollOptions): RefObject<HTM
     };
   }, [handleObserver, options.threshold]);
 
-  // Явное приведение типа для решения проблемы
   return loaderRef as RefObject<HTMLDivElement>;
 };
