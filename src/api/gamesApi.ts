@@ -7,17 +7,15 @@ interface ApiResponse {
   error_message: string;
 }
 
-const isProduction = typeof window !== 'undefined' && process.env.NODE_ENV === 'production';
-
 export const gamesApi = createApi({
   reducerPath: 'gamesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: isProduction ? 'https://belparyaj.com/pragmatic/game' : '/api',
+    baseUrl: '/api', // теперь универсально: и dev, и prod
   }),
   endpoints: (builder) => ({
     getGames: builder.query<Game[], { page: number; limit: number }>({
       query: ({ page, limit }) => ({
-        url: '/list',
+        url: 'list', // '/api/list' → проксируется в нужный endpoint
         params: {
           partner_name: 'belparyaj',
           _page: page,
