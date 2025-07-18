@@ -5,6 +5,8 @@ import { Loader } from '../../../components/Loader/Loader';
 import styles from './GameList.module.scss';
 import { useGames } from '../../../hooks/useGames';
 
+import logo from '../../../assets/images/Pragmatic.png';
+
 const GameList: React.FC = () => {
   const {
     filteredGames,
@@ -37,7 +39,10 @@ const GameList: React.FC = () => {
         onSearchChange={setSearchTerm}
         onTypeFilterChange={setGameTypeFilter}
       />
-      <h1>Pragmatic play</h1>
+      <h1>
+        <img src={logo} alt="Логотип" />
+        Pragmatic play
+      </h1>
 
       {isError && <div className={styles.error}>Ошибка загрузки игр: {String(error)}</div>}
 
