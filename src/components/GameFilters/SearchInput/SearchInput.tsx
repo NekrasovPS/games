@@ -22,15 +22,18 @@ export const SearchInput = React.memo(({ value, onSubmit }: SearchInputProps) =>
 
   return (
     <div className={styles.container}>
-      <input
-        type="text"
-        placeholder="Q Search"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className={styles.input}
-        aria-label="Search games"
-      />
+      <div className={styles.searchContainer}>
+        <p>Search</p>
+        <input
+          type="text"
+          placeholder="Search"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className={styles.input}
+          aria-label="Search games"
+        />
+      </div>
       <button className={styles.button} onClick={handleSearch} aria-label="Search">
         SEARCH
       </button>
