@@ -1,9 +1,3 @@
-// Если файл пустой, добавьте хотя бы:
-export {};
-
-// Или если есть функции:
-export const someHelper = () => {
-  // реализация
-};
+export const someHelper = () => {};
 
 export {};

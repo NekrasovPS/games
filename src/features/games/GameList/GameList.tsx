@@ -20,6 +20,14 @@ const GameList: React.FC = () => {
     hasMore,
   } = useGames();
 
+  if (isFetching && filteredGames.length === 0) {
+    return (
+      <div className={styles.container}>
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <GameFilters
@@ -29,6 +37,7 @@ const GameList: React.FC = () => {
         onSearchChange={setSearchTerm}
         onTypeFilterChange={setGameTypeFilter}
       />
+      <h1>Pragmatic play</h1>
 
       {isError && <div className={styles.error}>Ошибка загрузки игр: {String(error)}</div>}
 

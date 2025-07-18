@@ -23,5 +23,4 @@ export const useGamesData = (page: number, limit: number) => {
   return { allGames, hasMore, isFetching, isError };
 };
 
-// Добавляем явный экспорт
 export {};
