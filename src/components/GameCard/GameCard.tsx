@@ -16,8 +16,6 @@ export const GameCard = React.memo(({ game }: GameCardProps) => (
       alt={game.gameName}
       loading="lazy"
       className={styles.image}
-      width={200}
-      height={200}
     />
     <div className={styles.content}>
       <h3 className={styles.title}>{game.gameName}</h3>

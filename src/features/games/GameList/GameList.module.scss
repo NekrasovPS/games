@@ -1,13 +1,13 @@
 .container {
-  max-width: 1200px;
+  max-width: 1880px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(191px, 1fr));
+  row-gap: 10px;
+  column-gap: 20px;
   margin-top: 20px;
 }
 

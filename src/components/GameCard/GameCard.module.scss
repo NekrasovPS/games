@@ -1,37 +1,24 @@
 .card {
-  background: white;
-  border-radius: 8px;
+  background: rgb(0, 0, 0);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
 }
 
 .image {
   width: 100%;
-  height: auto;
+  height: 118px;
   aspect-ratio: 1/1;
   object-fit: cover;
 }
 
 .content {
-  padding: 12px;
+  // padding: 10px 0;
 }
 
 .title {
-  margin: 0 0 4px;
-  font-size: 16px;
-  color: #333;
+  font-size: 12px;
+  font-weight: 400;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.type {
-  font-size: 12px;
-  color: #666;
-  text-transform: uppercase;
 }

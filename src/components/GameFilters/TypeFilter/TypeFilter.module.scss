@@ -2,24 +2,29 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  border-radius: 10px;
+  background-color: #1c1c1c;
+  padding: 20px 0 20px 20px;
+  width: 100%;
 }
 
 .label {
-  font-weight: 500;
-  color: #333;
+  font-weight: 700;
+  color: #ffffff;
   font-size: 14px;
 }
 
-.select {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  min-width: 150px;
-  font-size: 14px;
+select {
+  width: 140px;
+  height: 40px;
+  appearance: none;
+  background-color: #1c1c1c;
+  color: rgb(255, 255, 255);
+  padding: 12px 10px 10px 20px;
+  border: 1px solid #ba8e47;
+  background-image: url('../../../assets/images/Arrow.svg');
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 30px;
   cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: #4a6bff;
-  }
 }
